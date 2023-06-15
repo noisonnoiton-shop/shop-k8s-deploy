@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-shop
+  labels:
+    app: mariadb-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb-shop
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mariadb-shop
+    spec:
+      containers:
+      - name: mariadb-shop
+        image: mariadb:latest
+        resources:
+          limits:
+            cpu: 600m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: skcc

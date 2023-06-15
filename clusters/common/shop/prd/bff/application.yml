@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+
+    
+spring:
+  application:
+    name: js-bff-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"

@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+
+spring:
+  application:
+    name: rabbitmq-consumer-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+

@@ -1,0 +1,33 @@
+otel:
+  service:
+    name: bff.manual
+  traces:
+    endpoint: http://jaeger-collector.istio-system.svc.cluster.local:4317
+  jaeger:
+    endpoint: http://jaeger-collector.istio-system.svc.cluster.local:14250
+
+spring:
+  thymeleaf:
+    prefix: classpath:/static/html/
+  session:
+    store-type: redis
+  redis:
+    host: redis-session.shop-infra
+    # port: 6379
+
+api:
+  account:
+    # url: https://yienng9ub2.execute-api.ap-northeast-2.amazonaws.com/account
+    url: http://apigateway:8090/account
+  cart:
+    # url: https://ie6carkx4e.execute-api.ap-northeast-2.amazonaws.com/cart
+    url: http://apigateway:8090/cart
+  order:
+    # url: https://0xd2dpvvm8.execute-api.ap-northeast-2.amazonaws.com/order
+    url: http://apigateway:8090/order
+  payment:
+    # url: https://vfny9to657.execute-api.ap-northeast-2.amazonaws.com/payment
+    url: http://apigateway:8090/payment
+  product:
+    # url: https://1x9yezcw0g.execute-api.ap-northeast-2.amazonaws.com/product
+    url: http://apigateway:8090/product

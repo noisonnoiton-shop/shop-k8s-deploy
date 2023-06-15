@@ -1,0 +1,27 @@
+server:
+  port: 8183
+
+domain:
+  name: payment
+
+sequence-nextval: nextval(event_seq)
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+
+spring:
+  application:
+    name: awesome-payment-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+              
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"

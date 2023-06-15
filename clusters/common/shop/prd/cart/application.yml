@@ -1,0 +1,27 @@
+server:
+  port: 8181
+
+domain:
+  name: cart
+
+sequence-nextval: nextval(event_seq)
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+
+spring:
+  application:
+    name: awesome-cart-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+              
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"

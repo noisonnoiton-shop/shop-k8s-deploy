@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-session
+  labels:
+    app: redis-session
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: redis-session
+  template:
+    metadata:
+      labels:
+        app: redis-session
+    spec:
+      containers:
+      - name: redis-session
+        image: redis:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 6379
+        env:
+          - name: REDIS_PASSWORD
+            value: skcc
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi

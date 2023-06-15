@@ -1,0 +1,30 @@
+server:
+  port: 8184
+
+domain:
+  category:
+    name: category
+  product:
+    name: product
+
+sequence-nextval: nextval(event_seq)
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+
+spring:
+  application:
+    name: awesome-product-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+              
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"

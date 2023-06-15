@@ -1,0 +1,536 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/ -Dotel.instrumentation.opentelemetry-instrumentation-annotations.enabled=true
+          # value: -Dapplication.home=/app/bin/ -Dotel.instrumentation.opentelemetry-instrumentation-annotations.enabled=true -Dotel.instrumentation.common.default-enabled=false -Dotel.instrumentation.opentelemetry-api.enabled=true -Dotel.instrumentation.tomcat.enabled=true -Dotel.instrumentation.spring-data.enabled=true -Dotel.instrumentation.hibernate.enabled=true -Dotel.instrumentation.jdbc.enabled=true -Dotel.instrumentation.opentelemetry-instrumentation-annotations.enabled=true
+        - name: OTEL_SERVICE_NAME
+          value: account.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          value: "false"
+        - name: OTEL_INSTRUMENTATION_COMMON_EXPERIMENTAL_CONTROLLER_TELEMETRY_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_OPENTELEMETRY_API_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_SPRING_DATA_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_HIBERNATE_ENABLED
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_JDBC_ENABLED
+          value: "true"
+        name: account
+        image: kloudbank/account:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8180
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: account
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      labels:
+        app: apigateway
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: apigateway.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: apigateway
+        image: kloudbank/apigateway:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8090
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: apigateway
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: bff
+  template:
+    metadata:
+      labels:
+        app: bff
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: bff.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: bff
+        image: kloudbank/bff:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: bff
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: cart.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: cart
+        image: kloudbank/cart:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8181
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: cart
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: order.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: order
+        image: kloudbank/order:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8182
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: order
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: payment.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: payment
+        image: kloudbank/payment:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8183
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: payment
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: product.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: product
+        image: kloudbank/product:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8184
+        # resources:
+        #   limits:
+        #     cpu: 1000m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: product
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer
+spec:
+  # replicas: 0
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -Dapplication.home=/app/bin/
+        - name: OTEL_SERVICE_NAME
+          value: rabbitmq-consumer.shop
+        - name: OTEL_TRACES_EXPORTER
+          value: jaeger
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRICS_EXPORTER
+          value: none
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc.cluster.local:14250
+        - name: OTEL_PROPAGATORS
+          value: jaeger
+        name: rabbitmq-consumer
+        image: kloudbank/rabbitmq-consumer:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+        # resources:
+        #   limits:
+        #     cpu: 800m
+        #     memory: 512Mi
+        #   requests:
+        #     cpu: 200m
+        #     memory: 256Mi
+        volumeMounts:
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        # - name: xray-sampling-rules
+        #   mountPath: "/xray-sampling-rules"
+        #   readOnly: true
+      volumes:
+      - name: application-properties
+        configMap:
+          name: rabbitmq-consumer
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-prd.yml
+            path: application-prd.yml
+      # - name: xray-sampling-rules
+      #   configMap:
+      #     name: xray-sampling-rules
+      #     items:
+      #     - key: sampling-rules.json
+      #       path: sampling-rules.json

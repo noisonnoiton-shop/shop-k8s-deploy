@@ -1,0 +1,32 @@
+server:
+  port: 8180
+
+domain:
+  account:
+    name: account
+  accountBank:
+    name: accountBank
+
+sequence-nextval: nextval(event_seq)
+
+logging:
+  level:
+    com.amazonaws.xray: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.core : INFO
+
+spring:
+  application:
+    name: awesome-account-service
+  config:
+    import: 
+    - file:./config/application-prd.yml
+  session:
+    store-type: redis
+      
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"

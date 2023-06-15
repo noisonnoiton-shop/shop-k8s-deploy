@@ -1,0 +1,44 @@
+otel:
+  service:
+    name: account.manual
+  traces:
+    endpoint: http://jaeger-collector.istio-system.svc.cluster.local:4317
+  jaeger:
+    endpoint: http://jaeger-collector.istio-system.svc.cluster.local:14250
+
+mybatis:
+  config-location: mybatis-config-mariadb.xml
+
+spring:
+  redis:
+    host: redis-session.shop-infra
+    # port: 6379
+  jpa:
+    hibernate.ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.MariaDB103Dialect
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb-shop.shop-infra/accounts?characterEncoding=UTF-8
+    username: root
+    password: skcc
+    platform: mariadb
+    initialization-mode: always
+    jdbc-interceptors: com.amazonaws.xray.sql.mysql.TracingInterceptor
+    # continue-on-error: true
+
+  rabbitmq:
+    addresses: rabbitmq.shop-infra
+    username: labs
+    password: awesome-rabbitmq
+  cloud:
+    stream:
+      bindings:
+        accountOutput:
+          destination: accountTopic
+          content-type: application/json
+      rabbit:
+        bindings:
+          accountOutput:
+            producer:
+              routing-key-expression: headers['routeTo']

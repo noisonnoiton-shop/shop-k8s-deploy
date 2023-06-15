@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-shop
+  labels:
+    app: mariadb-shop
+spec:
+  serviceName: mariadb-shop
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb-shop
+  template:
+    metadata:
+      labels:
+        app: mariadb-shop
+    spec:
+      containers:
+      - name: mariadb-shop
+        image: mariadb:latest
+        resources:
+          limits:
+            cpu: 600m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: skcc
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

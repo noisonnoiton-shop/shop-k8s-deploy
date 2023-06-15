@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+
+namespace: shop
+
+resources:
+- ./prd/deployment.yaml
+- ./prd/service.yaml
+- ./prd/ingress.yaml
+# - ./prd/hpa.yaml
+# - ./prd/canary.yaml
+# - ./prd/alertprovider.yaml
+
+
+configMapGenerator:
+- name: account
+  files:
+  - ./prd/account/application.yml
+  - ./prd/account/application-prd.yml
+- name: apigateway
+  files:
+  - ./prd/apigateway/application.yml
+  - ./prd/apigateway/application-prd.yml
+- name: bff
+  files:
+  - ./prd/bff/application.yml
+  - ./prd/bff/application-prd.yml
+- name: cart
+  files:
+  - ./prd/cart/application.yml
+  - ./prd/cart/application-prd.yml
+- name: order
+  files:
+  - ./prd/order/application.yml
+  - ./prd/order/application-prd.yml
+- name: payment
+  files:
+  - ./prd/payment/application.yml
+  - ./prd/payment/application-prd.yml
+- name: product
+  files:
+  - ./prd/product/application.yml
+  - ./prd/product/application-prd.yml
+- name: rabbitmq-consumer
+  files:
+  - ./prd/rabbitmq-consumer/application.yml
+  - ./prd/rabbitmq-consumer/application-prd.yml
+  
+
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+  annotations:
+    note: generated
