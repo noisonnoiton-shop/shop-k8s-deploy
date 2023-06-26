@@ -45,6 +45,8 @@ spec:
           value: "true"
         - name: OTEL_INSTRUMENTATION_JDBC_ENABLED
           value: "true"
+        - name: OTEL_INSTRUMENTATION_SERVLET_EXPERIMENTAL_CAPTURE_REQUEST_PARAMETERS
+          value: "true"  
         name: account
         image: kloudbank/account:1.0.0
         imagePullPolicy: Always
